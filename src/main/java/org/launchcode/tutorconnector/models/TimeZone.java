@@ -1,7 +1,7 @@
 package org.launchcode.tutorconnector.models;
 
 public enum TimeZone {
-//fixed set of timezones
+    //fixed set of timezones
     EASTERN_TIMEZONE("EST"),
     CENTRAL_TIMEZONE("CST"),
     MOUNTAIN_TIMEZONE("MST"),
