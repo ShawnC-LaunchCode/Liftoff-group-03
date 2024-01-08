@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="../../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
+    <title>Checkout</title>
+</head>
+<body>
+<h1>Payment Checkout</h1>
+<form action="#" th:action="@{/student/payment/processPayment}" th:object="${stripeRequest}" method="post">
+<div>
+    <label> for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" th:field="*{amount" required />
+</div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" th:field="*{email}" required />
+    </div>
+    <div>
+        <label for="tutorSession">Tutor Session:</label>
+        <input type="text" id="tutorSession" name="tutorSession" th:field="*{tutorSession}" required />
+    </div>
+    <div>
+        <button type="submit">Submit Payment</button>
+    </div>
+</form>
+</body>
+</html>

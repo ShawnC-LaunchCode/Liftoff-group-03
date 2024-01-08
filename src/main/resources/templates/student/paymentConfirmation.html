@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="../../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
+    <title>Payment Confirmation</title>
+</head>
+<body>
+<div>
+<h1>Payment Confirmation</h1>
+    <div>
+        <p>Thank you for your payment!</p>
+        <p>Amount: <span th:text="${amount}">Amount</span></p>
+        <p>Email: <span th:text="${email}">Email</span></p>
+        <p>Tutor Session: <span th:text="${tutorSession}">Tutor Session</span></p>
+        <p>Payment Intent ID: <span th:text="${intentID}">Intent ID</span></p>
+        <p>Your payment has been processed successfully.</p>
+    </div>
+    <a href="student-profile.html">Return to Profile</a>
+</div>
+</body>
+</html>

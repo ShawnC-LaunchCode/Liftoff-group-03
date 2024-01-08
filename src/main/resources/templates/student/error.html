@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="../../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
+    <title>Error</title>
+</head>
+<body>
+
+<h1>Error Processing Payment</h1>
+<p th:text="${error}">Error message</p>
+<a href="@{/student/payment/checkout}" class="btn btn-primary">Try Again</a>
+</body>
+</html>
