@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 
 @Controller
 @RequestMapping("/student/payment")
@@ -33,9 +34,11 @@ public class StripePaymentController {
 
             // Add PaymentIntent information to the model
             model.addAttribute("clientSecret", intent.getClientSecret());
-            model.addAttribute("amount", StripeRequestDTO.getAmount());
             model.addAttribute("email", stripeRequestDTO.getEmail());
-            model.addAttribute("tutorSession", StripeRequestDTO.getTutorSession());
+            model.addAttribute("tutorName", stripeRequestDTO.getTutorName());
+            model.addAttribute("sessionDate", stripeRequestDTO.getSessionDate());
+            model.addAttribute("sessionDuration", stripeRequestDTO.getSessionDuration());
+            model.addAttribute("sessionCost", stripeRequestDTO.getSessionCost());
 
             return "paymentConfirmation";
         } catch (StripeException e) {
@@ -49,12 +52,17 @@ public class StripePaymentController {
         private PaymentIntent createPaymentIntent(@ModelAttribute StripeRequestDTO stripeRequestDTO, Model model)
                 throws StripeException {
         Stripe.apiKey = secretKey;
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dateFormat.format(stripeRequestDTO.getSessionDate());
             // enforced by Stripe library to throw an exception in case of errors during interaction with API
             PaymentIntentCreateParams params =
                     PaymentIntentCreateParams.builder()
                             //Stripe uses cents
-                            .setAmount(StripeRequestDTO.getAmount() * 100L)
-                            .putMetadata("tutorSession", StripeRequestDTO.getTutorSession())
+                            .setAmount(stripeRequestDTO.getSessionCost() * 100L)
+                            .putMetadata("tutorSession", stripeRequestDTO.getTutorName())
+                            .putMetadata("sessionDate",formattedDate)
+                            .putMetadata("sessionDuration", stripeRequestDTO.getSessionDuration().toString())
                             .setCurrency("usd")
                             .setAutomaticPaymentMethods(
                                     PaymentIntentCreateParams.AutomaticPaymentMethods.builder()

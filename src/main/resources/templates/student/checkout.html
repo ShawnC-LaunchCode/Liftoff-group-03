@@ -1,28 +1,47 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
-    <meta charset="UTF-8">
-    <link th:href="../../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
-    <title>Checkout</title>
+    <title>Payment Page</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var stripe = Stripe("pk_live_51ONKfxHc5mfrtYi5sK7ULrRaQsmPjSdk0H6RYdbAdCt5PvXov0hfayZvrspNuiwF8XBitqp80ThwZ0UTn3UqtVPV00cbho8gSy");
+        var tutorName = /*[[${tutorName}]]*/ null;
+        var sessionDate = /*[[${sessionDate}]]*/ null;
+        var sessionDuration = /*[[${sessionDuration}]]*/ null;
+        var sessionCost =  /*[[${sessionCost]]*/ null;
+
+    </script>
+    <link href="../../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
 </head>
 <body>
-<h1>Payment Checkout</h1>
-<form action="#" th:action="@{/student/payment/processPayment}" th:object="${stripeRequest}" method="post">
-<div>
-    <label> for="amount">Amount:</label>
-    <input type="number" id="amount" name="amount" th:field="*{amount" required />
-</div>
+<h2>Session Payment</h2>
+<form id="payment-form" th:action="@{/student/payment/processPayment}" method="post">
     <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" th:field="*{email}" required />
+        <label for="tutor-name">Tutor Name:</label>
+        <input type="text" id="tutor-name" th:value="*{tutorName}" readonly/>
     </div>
     <div>
-        <label for="tutorSession">Tutor Session:</label>
-        <input type="text" id="tutorSession" name="tutorSession" th:field="*{tutorSession}" required />
+        <label for="session-date">Session Date:</label>
+        <input type="text" id="session-date" th:value="*{sessionDate}" readonly/>
     </div>
     <div>
-        <button type="submit">Submit Payment</button>
+        <label for="session-duration">Duration (hours):</label>
+        <input type="number" id="session-duration" th:value="*{sessionDuration}" readonly/>
     </div>
+    <div>
+        <label for="session-cost">Cost (USD):</label>
+        <input type="text" id="session-cost" th:value="*{sessionCost}" readonly/>
+    </div>
+
+    <div id="card-element">
+        <!-- Stripe Elements will be inserted here -->
+    </div>
+    <div id="link-authentication-element">
+        <!--Stripe.js injects the Link Authentication Element-->
+    </div>
+    <button type="submit">Pay Now</button>
 </form>
 </body>
 </html>
+

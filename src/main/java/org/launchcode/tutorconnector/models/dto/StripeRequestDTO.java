@@ -2,33 +2,38 @@ package org.launchcode.tutorconnector.models.dto;
 
 import jakarta.validation.constraints.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class StripeRequestDTO {
 
-    @NotNull(message = "Amount cannot be null")
-    @Min(value = 4, message = "Amount must be atleast 4")
-    private static Long amount;
 
     @Email(message = "Invalid email format")
     private String email;
 
-    @NotBlank(message = "Tutor Session description must include tutor name and session number")
-    @Size(min = 5, max = 200, message = "Tutor Session description must be between 5 and 200 characters ")
-    private static String tutorSession;
+    @NotBlank(message = "Tutor name must be included.")
+    @Size(min = 5, max = 30, message = "Tutor Session name must be between 5 and 30 characters ")
+    private String tutorName;
+
+    @NotBlank(message = "Date must be provided")
+    private Date sessionDate;
+
+    @Min(value = 1, message = "Duration must be higher than 1")
+    private Double sessionDuration;
+
+    @NotNull(message = "Amount cannot be null")
+    @Min(value = 4, message = "Amount must be atleast $1usd")
+    private Long sessionCost;
 
     public StripeRequestDTO () {}
 
-    public StripeRequestDTO(Long amount, String email, String tutorSession) {
-        this.amount = amount;
+    public StripeRequestDTO(String email, String tutorName, Date sessionDate, Double sessionDuration, Long sessionCost) {
         this.email = email;
-        this.tutorSession = tutorSession;
-    }
-
-    public static Long getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
+        this.tutorName = tutorName;
+        this.sessionDate = sessionDate;
+        this.sessionDuration = sessionDuration;
+        this.sessionCost = sessionCost;
     }
 
     public String getEmail() {
@@ -39,11 +44,43 @@ public class StripeRequestDTO {
         this.email = email;
     }
 
-    public static String getTutorSession() {
-        return tutorSession;
+    public String getTutorName() {
+        return tutorName;
     }
 
-    public void setTutorSession(String tutorSession) {
-        this.tutorSession = tutorSession;
+    public void setTutorName(String tutorName) {
+        this.tutorName = tutorName;
+    }
+
+    public @NotBlank(message = "Date must be provided") Date getSessionDate() {
+        return sessionDate;
+    }
+
+    public void setSessionDate(String dateString) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
+            this.sessionDate = formatter.parse(dateString);
+    }
+
+    public @Min(value = 4, message = "Amount must be atleast 1") Double getSessionDuration() {
+        return sessionDuration;
+    }
+
+    public void setSessionDuration(Double sessionDuration) {
+        this.sessionDuration = sessionDuration;
+    }
+
+    public Long getSessionCost() {
+        return sessionCost;
+    }
+
+    public void setSessionCost(Long sessionCost) {
+        this.sessionCost = sessionCost;
+    }
+
+    @Override
+    public String toString() {
+        return "StripeRequestDTO{" +
+                "sessionDuration=" + sessionDuration +
+                '}';
     }
 }
