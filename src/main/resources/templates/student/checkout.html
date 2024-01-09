@@ -3,15 +3,6 @@
 <head>
     <title>Payment Page</title>
     <script src="https://js.stripe.com/v3/"></script>
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        var stripe = Stripe("pk_live_51ONKfxHc5mfrtYi5sK7ULrRaQsmPjSdk0H6RYdbAdCt5PvXov0hfayZvrspNuiwF8XBitqp80ThwZ0UTn3UqtVPV00cbho8gSy");
-        var tutorName = /*[[${tutorName}]]*/ null;
-        var sessionDate = /*[[${sessionDate}]]*/ null;
-        var sessionDuration = /*[[${sessionDuration}]]*/ null;
-        var sessionCost =  /*[[${sessionCost]]*/ null;
-
-    </script>
     <link href="../../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
 </head>
 <body>
@@ -33,7 +24,6 @@
         <label for="session-cost">Cost (USD):</label>
         <input type="text" id="session-cost" th:value="*{sessionCost}" readonly/>
     </div>
-
     <div id="card-element">
         <!-- Stripe Elements will be inserted here -->
     </div>
@@ -42,6 +32,44 @@
     </div>
     <button type="submit">Pay Now</button>
 </form>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var stripe = Stripe("pk_live_51ONKfxHc5mfrtYi5sK7ULrRaQsmPjSdk0H6RYdbAdCt5PvXov0hfayZvrspNuiwF8XBitqp80ThwZ0UTn3UqtVPV00cbho8gSy");
+    var tutorName = /*[[${tutorName}]]*/ null;
+    var sessionDate = /*[[${sessionDate}]]*/ null;
+    var sessionDuration = /*[[${sessionDuration}]]*/ null;
+    var sessionCost =  /*[[${sessionCost]]*/ null;
+    var elements = stripe.elements();
+    var style = {
+        base: {
+            // Add style
+        }
+    };
+
+    var card = elements.create('card', {style: style});
+    card.mount('#card-element');
+
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        stripe.confirmCardPayment("/*[[${clientSecret}]]*/ 'client_secret_from_server'", {
+            payment_method: {
+                card: card
+            }
+        }).then(function(result) {
+            if (result.error) {
+                // Display error message to your customer
+                console.log(result.error.message);
+            } else {
+                // Payment succeeded, navigate to success page
+                window.location.href = "/success";
+            }
+        });
+    });
+    /*]]>*/
+</script>
 </body>
 </html>
 
