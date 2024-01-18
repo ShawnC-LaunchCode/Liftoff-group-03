@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
-    <title>Student Register</title>
+    <title>Student Update</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
 </head>
@@ -15,46 +15,42 @@
         <article class="infobox">
             <h1>Update Profile</h1>
 
-            <form id="editForm" th:object="${student}" th:action="@{/update}" method="PUT">
+            <form id="editForm" th:object="${student}" th:action="@{/student/update/{id}(id=${student.id})}" th:method="PUT">
                 <table class="table table--striped" style="border-collapse: collapse; width: 85%; margin: 15px auto 25px auto; border: #CBCBCB; border-style: solid; border-width: thin;">
-                    <thead>
-                    <tr>
-                        <th style="text-align: center;">Profile Information</th>
-                        <td style="width: 25%; text-align: right;">
-                            <button type="button" >Edit</button>
-                        </td>
-                    </tr>
-                    </thead>
-                    <tr>
-                        <td style="width: 25%;">Name: </td>
-                        <td th:if="${!editMode}" th:text="${student.firstName} + ' ' + ${student.lastName}">Student name</td>
-                        <td th:if="${editMode}"><input type="text" th:field="*{firstName}" /> <input type="text" th:field="*{lastName}" /></td>
-                    </tr>
+                    <div class="container">
+                        <div class="row">
+                            <div class="form-item col-4">
+                                <label th:for="firstName">First Name</label>
+                                <input th:field="${student.firstName}" />
+                                <p class="error" th:errors="${student.firstName}"></p>
+                            </div>
+                        </div>
+                    </div>
 
-                    <tr>
-                        <td style="width: 25%;">Grade level: </td>
-                        <td th:if="${!editMode}" th:text="${student.gradeLevel}">Student grade level</td>
-                        <td th:if="${editMode}"><input type="text" th:field="*{gradeLevel}" /></td>
-                    </tr>
-                </table>
-                <button type="submit" th:if="${editMode}">Submit</button>
-            </form>
-
-                <!--        <div class="container">-->
-                <!--            <div class="row">-->
-                <!--                <div class="form-item col-4">-->
-                <!--                    <label>Grade Level: </label>-->
-                <!--                        <select th:field="*{gradeLevel}">-->
-                <!--                            <option value = 'Grad'>Graduate</option>-->
-                <!--                            <option value = 'UG'>Undergraduate</option>-->
-                <!--                            <option value = 'HS'>High School</option>-->
-                <!--                        </select>-->
-                <!--                </div>-->
-                <!--            </div>-->
-                <!--        </div>-->
+                    <div class="container">
+                        <div class="row">
+                            <div class="form-item col-4">
+                                <label th:for="lastName">Last Name</label>
+                                <input th:field="${student.lastName}" />
+                                <p class="error" th:errors="${student.lastName}"></p>
+                            </div>
+                        </div>
+                    </div>
 
 
-                <br/>
+                    <div class="container">
+                        <div class="row">
+                            <div class="form-item col-4">
+                                <label>Grade Level: </label>
+                                <select th:field="${student.gradeLevel}">
+                                    <option value="GRADUATE">Graduate</option>
+                                    <option value="UNDERGRADUATE">Undergraduate</option>
+                                    <option value="HIGH_SCHOOL">High School</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
                 <button type="submit">Update</button>
             </form>
         </article>

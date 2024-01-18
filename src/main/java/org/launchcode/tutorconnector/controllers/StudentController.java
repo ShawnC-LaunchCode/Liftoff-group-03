@@ -21,8 +21,8 @@ public class StudentController {
     private StudentRepository studentRepository;
 
     @GetMapping("/")
-    public String index(Model model){
-        model.addAttribute("students", studentRepository.findAll() );
+    public String index(Model model) {
+        model.addAttribute("students", studentRepository.findAll());
         return "student/index";
     }
 
@@ -38,13 +38,15 @@ public class StudentController {
         }
     }
 
-//    @PutMapping("/update/{id}")
-//    public void updateStudent(@PathVariable int id, Model model) {
-//        Optional<Student> optStudent = studentRepository.findById(id);
-//        if (optStudent.isPresent()) {
-//            Student student = optStudent.get();
-//            model.addAttribute("student", student);
-//    }
+    @PutMapping("/update/{id}")
+    public String updateStudent(@PathVariable int id, Model model) {
+        Optional<Student> optStudent = studentRepository.findById(id);
+        if (optStudent.isPresent()) {
+            Student student = optStudent.get();
+            model.addAttribute("student", student);
+            }
+            return "student/update";
+    }
 
     @RequestMapping("/calendar")
     public String displayCalendar(Model model,@RequestParam String studentId) {

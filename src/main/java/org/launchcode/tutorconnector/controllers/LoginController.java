@@ -180,7 +180,7 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         request.getSession().invalidate();
-        return "redirect:/index";
+        return "logout";
     }
 
 }

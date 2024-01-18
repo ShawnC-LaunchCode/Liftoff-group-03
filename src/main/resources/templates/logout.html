@@ -13,9 +13,13 @@
 <div class="homepage">
     <article class="infobox">
         <h1>Logout Successful!</h1>
-            <p><a th:href="@{/login}">Login again</a></p>
+
             <br/>
-            <p><a th:href="@{/resources}">Check out our learning resources</a></p>
+
+                    <p><a th:href="@{/login}">Login again</a></p>
+                    <p><a th:href="@{/resources}">Check out our learning resources</a></p>
+        
+
     </article>
 </div>
 <footer th:replace="~{fragments :: footer}"></footer>
