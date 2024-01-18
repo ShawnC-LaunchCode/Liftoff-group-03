@@ -10,24 +10,27 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
-    <div class="container body-content">
-        <h1 th:text="'Tutor Review for ' + ${tutor.firstName} + ' ' + ${tutor.lastName}"></h1>
-    </div>
-    <form th:action = "@{/tutorreviews/add}" method = "post">
-        <p>
-            <label for="subject">Select Subject: </label>
-            <select id="subject" name="subject">
-                <option th:each="subject : ${tutor.getSubjects()}" th:value="${subject.courseName}" th:text="${subject.courseName}"></option>
-            </select>
-        </p>
 
-        <p>
-            <textarea rows="5" name="review" id="review" ></textarea>
-        </p>
-        <input type="hidden" th:value = "${tutor.getId()}" name="tutorId" id="tutorId" />
-        <input type="submit" value="Add Review" />
+<div class="container body-content">
+    <h1 th:text="'Tutor Review for ' + ${tutor.firstName} + ' ' + ${tutor.lastName}"></h1>
+</div>
+<form th:action = "@{/tutorreviews/add}" method = "post">
+    <p>
+        <label for="subject">Subject: </label>
+        <select class="form-control" id="subject" name="subject">
+            <option th:each="subject : ${tutor.getSubjects()}" th:value="${subject.courseName}" th:text="${subject.courseName}"></option>
+        </select>
+    </p>
 
-    </form>
+    <p>
+        <textarea rows="5" name="review" id="review" ></textarea>
+    </p>
+    <input type="hidden" th:value = "${tutor.getId()}" name="tutorId" id="tutorId" />
+    <input type="submit" value="Add Review" />
+
+</form>
+
+</body>
 
     <footer th:replace="~{fragments :: footer}"></footer>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
