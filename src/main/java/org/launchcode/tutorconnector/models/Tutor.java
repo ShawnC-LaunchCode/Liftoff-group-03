@@ -1,47 +1,65 @@
 package org.launchcode.tutorconnector.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 @Entity
 public class Tutor extends AbstractEntity {
 
+    private ArrayList<String> qualifications;
+
+    @ManyToMany
+    private List<Subject> subjects = new ArrayList<>();
+
+    private String availability;
+//
+//    private String zoomLink;
+
+    @ManyToMany
+    private List<Student> students = new ArrayList<>();
 
     @OneToMany
     @JoinColumn(name = "tutor_id")
     private List<TutorReview> tutorReviews = new ArrayList<>();
 
-    @ManyToMany
-    private List<Subject> subjects = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "tutor_id")
+    private List<Event> events = new ArrayList<>();
 
-    private String zoomLink;
+    @NotBlank
+    @NotNull
+    private String pwHash;
 
-    private ArrayList<String> qualifications;
-
-    private String availability;
-
-    @ManyToMany
-    private List<Student> students = new ArrayList<>();
-
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public Tutor() {
     }
 
 
-    public Tutor(String firstName, String lastName, String email, String password, TimeZone timeZone, ArrayList<String> qualifications, List<Subject> subjects, String availability) {
-        super(firstName, lastName, email, password, timeZone);
+    public Tutor(String firstName, String lastName, String email, String password, ArrayList<String> qualifications, List<Subject> subjects, String availability) {
+        super(firstName, lastName, email);
         this.qualifications = qualifications;
         this.subjects = subjects;
         this.availability = availability;
+        this.pwHash = encoder.encode(password);
     }
 
     public Tutor(String email, String password) {
+        super(email);
+        this.pwHash = encoder.encode(password);
+    }
+
+    public ArrayList<String> getQualifications() {
+        return qualifications;
+    }
+
+    public void setQualifications(ArrayList<String> qualifications) {
+        this.qualifications = qualifications;
     }
 
     public List<Subject> getSubjects() {
@@ -50,6 +68,14 @@ public class Tutor extends AbstractEntity {
 
     public void setSubjects(List<Subject> subjects) {
         this.subjects = subjects;
+    }
+
+    public String getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(String availability) {
+        this.availability = availability;
     }
 
     public List<Student> getStudents() {
@@ -68,28 +94,31 @@ public class Tutor extends AbstractEntity {
         this.tutorReviews = tutorReviews;
     }
 
-    public String getZoomLink() {
-        return zoomLink;
+//    public String getZoomLink() {
+//        return zoomLink;
+//    }
+//
+//    public void setZoomLink(String zoomLink) {
+//        this.zoomLink = zoomLink;
+//    }
+
+    public void setPwHash(String pwHash) {
+        this.pwHash = pwHash;
     }
 
-    public void setZoomLink(String zoomLink) {
-        this.zoomLink = zoomLink;
+    public boolean isMatchingPassword(String password) {
+        return encoder.matches(password, this.pwHash);
     }
 
-    public ArrayList<String> getQualifications() {
-        return qualifications;
+    public List<Event> getEvents() {
+        return events;
     }
 
-    public void setQualifications(ArrayList<String> qualifications) {
-        this.qualifications = qualifications;
+    @Override
+    public String toString() {
+        return "Tutor{" +
+                "subjects=" + subjects +
+                '}';
     }
-
-    public String getAvailability() {
-        return availability;
-    }
-
-    public void setAvailability(String availability) {
-        this.availability = availability;
-    }
-
 }
+

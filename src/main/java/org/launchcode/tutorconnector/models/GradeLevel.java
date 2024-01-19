@@ -2,10 +2,10 @@ package org.launchcode.tutorconnector.models;
 
 public enum GradeLevel {
 
-    ELEMENTARY("Elementary School"),
-    MIDDLE("Middle School"),
-    HIGH("High School"),
-    COLLEGE("College");
+    GRADUATE("Graduate"),
+    UNDERGRADUATE("Undergraduate"),
+    HIGH_SCHOOL("High School"),
+    ;
 
     private final String displayGradeLevel;
 

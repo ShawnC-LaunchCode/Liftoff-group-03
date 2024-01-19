@@ -1,6 +1,9 @@
 package org.launchcode.tutorconnector.controllers;
+
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.launchcode.tutorconnector.models.Student;
+import org.launchcode.tutorconnector.models.Tutor;
 import org.launchcode.tutorconnector.models.data.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,37 +26,39 @@ public class StudentController {
         return "student/index";
     }
 
-
-
-    @GetMapping("add")
-    public String displayAddSkillForm(Model model) {
-        model.addAttribute(new Student());
-        return "student/add";
-    }
-
-    @PostMapping("add")
-    public String processAddStudentForm(@ModelAttribute @Valid Student newStudent,
-                                        Errors errors, Model model) {
-
-        if (errors.hasErrors()) {
-            return "student/add";
+    @GetMapping("/profile/{id}")
+    public String displayStudentProfile(@PathVariable int id, Model model) {
+        Optional<Student> optStudent = studentRepository.findById(id);
+        if (optStudent.isPresent()) {
+            Student student = optStudent.get();
+            model.addAttribute("student", student);
+            model.addAttribute("studentId", student.getId());
+            return "student/profile";
+        } else {
+            return "redirect:/register";
         }
-        studentRepository.save(newStudent);
-        return "redirect:";
     }
 
-    @GetMapping("view/{studentId}")
-    public String displayViewSkill(Model model, @PathVariable int studentId) {
+//    @PutMapping("/update/{id}")
+//    public void updateStudent(@PathVariable int id, Model model) {
+//        Optional<Student> optStudent = studentRepository.findById(id);
+//        if (optStudent.isPresent()) {
+//            Student student = optStudent.get();
+//            model.addAttribute("student", student);
+//    }
 
-        Optional optStudent = studentRepository.findById(studentId);
+    @RequestMapping("/calendar")
+    public String displayCalendar(Model model,@RequestParam String studentId) {
+        int value = Integer.parseInt(studentId);
+        Optional optStudent = studentRepository.findById(value);
         if (optStudent.isPresent()) {
             Student student = (Student) optStudent.get();
             model.addAttribute("student", student);
-            return "student/view";
-        } else {
-            return "redirect:../";
+            model.addAttribute("events", student.getEvents());
         }
+        return "student/calendar";
+    }
 
     }
 
-}
+

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Meeting</title>
+    <link href="../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+<header th:replace="fragments :: header"></header>
+<article class="infobox">
+<h1>Create a Session</h1>
+
+<form id="create-meeting-form">
+    <div>
+        <label for="roomName">Room Name (Personalized):</label>
+        <input type="text" id="roomName" name="roomName" required>
+    </div>
+    <div>
+        <label for="studentEmail">Student Email:</label>
+        <input type="email" id="studentEmail" name="studentEmail" required>
+    </div>
+    <div>
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required>
+    </div>
+    <button type="submit">Create Session</button>
+</form>
+
+<!-- Section to display meeting details -->
+<div id="meeting-details">
+</div>
+
+<script>
+    document.getElementById('create-meeting-form').addEventListener('submit', async function(event) {
+     event.preventDefault();
+
+     const roomName = document.getElementById('roomName').value;
+     const studentEmail = document.getElementById('studentEmail').value;
+     const subject = document.getElementById('subject').value;
+
+     try {
+         const response = await createMeeting({ roomName, studentEmail, subject });
+         if (response.ok) {
+             const meetingData = await response.json();
+             console.log(meetingData); // Log the response to see its structure
+             displayMeetingDetails(meetingData, studentEmail, subject);
+         } else {
+             throw new Error('Meeting creation failed');
+         }
+     } catch (error) {
+         console.error('Error:', error);
+     }
+ });
+
+ async function createMeeting(data) {
+     return await fetch('/api/create-meeting', {
+         method: 'POST',
+         headers: {'Content-Type': 'application/json'},
+         body: JSON.stringify(data)
+     });
+ }
+
+ function displayMeetingDetails(meetingData, studentEmail, subject) {
+     const detailsDiv = document.getElementById('meeting-details');
+     // Adjust these lines based on the actual structure of meetingData
+     detailsDiv.innerHTML = `
+         <h2>Meeting Details</h2>
+         <p>Meeting URL: ${meetingData.url || ''}</p>
+         <p>Student's Email: ${studentEmail}</p>
+         <p>Subject: ${subject}</p>`;
+ }
+</script>
+</article>
+<footer th:replace="fragments :: footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</body>
+</html>
+

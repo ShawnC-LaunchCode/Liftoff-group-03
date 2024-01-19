@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface TutorRepository extends CrudRepository<Tutor, Integer> {
 
-    Tutor findByEmail(String email);
+   Tutor findByEmail(String email);
 
 }

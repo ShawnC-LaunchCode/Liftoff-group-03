@@ -1,10 +1,13 @@
 package org.launchcode.tutorconnector.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
-public class TutorReview extends AbstractEntity{
+public class TutorReview{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToOne
     private Tutor tutor;
@@ -43,5 +46,13 @@ public class TutorReview extends AbstractEntity{
 
     public void setReview(String review) {
         this.review = review;
+    }
+
+    @Override
+    public String toString() {
+        return "TutorReview{" +
+                "subject='" + subject + '\'' +
+                ", review='" + review + '\'' +
+                '}';
     }
 }

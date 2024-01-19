@@ -5,13 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @MappedSuperclass
@@ -30,32 +27,25 @@ public abstract class AbstractEntity {
     private String lastName;
 
     @Email(message = "Invalid email. Try again.")
-    private String email;
+    public String email;
 
-
-    @NotNull(message = "image is required")
-    @Size(min = 30, max = 150, message = "image path must be between 3 and 100 characters long")
     private String imagePath;
 
-    @NotBlank
-    @NotNull
-    String pwHash;
-
-    @NotNull
-    @NotBlank
-    private TimeZone timeZone;
 
     //empty constructor pass down to the form for structure of object
     public AbstractEntity() {}
-    // actual constructor used to instantiate an object
 
-    public AbstractEntity(String firstName, String lastName, String email, String password, TimeZone timeZone) {
+    // actual constructor used to instantiate an object
+    public AbstractEntity(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.pwHash = encoder.encode(password);
-        this.timeZone = timeZone;
     }
+
+    public AbstractEntity(String email) {
+        this.email = email;
+    }
+
 
     public int getId() {
         return id;
@@ -73,20 +63,36 @@ public abstract class AbstractEntity {
         return email;
     }
 
-    public TimeZone getTimeZone() {
-        return timeZone;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public void setTimeZone(TimeZone timeZone) {
-        this.timeZone = timeZone;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    public boolean isMatchingPassword(String password) {
-        return encoder.matches(password, pwHash);
+    public void setEmail(String email) {
+        this.email = email;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    @Override
+    public String toString() {
+        return "AbstractEntity{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", imagePath='" + imagePath + '\'' +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {

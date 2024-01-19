@@ -1,13 +1,16 @@
 package org.launchcode.tutorconnector.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Subject extends AbstractEntity{
+public class Subject {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @ManyToMany(mappedBy = "subjects")
     private List<Tutor> tutors = new ArrayList<>();
@@ -17,6 +20,10 @@ public class Subject extends AbstractEntity{
     private String description;
 
     public Subject() {}
+
+    public int getId() {
+        return id;
+    }
 
     public List<Tutor> getTutors() {
         return tutors;
@@ -40,5 +47,12 @@ public class Subject extends AbstractEntity{
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Subject{" +
+                "courseName='" + courseName + '\'' +
+                '}';
     }
 }

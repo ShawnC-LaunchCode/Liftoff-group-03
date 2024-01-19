@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
+    <script type="text/javascript" th:src="@{js/daypilot/daypilot-all.min.js}"></script>
+
+    <title>Tutor Profile page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<article class="infobox">
+    <h3 th:if="${tutorLoggedIn}" >Welcome, <span th:text="${tutor != null ? tutor.firstName : 'Tutor'}">!</span></h3>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <div class="box box3">
+                    <img th:if="${tutor.imagePath != null}" th:src="'/images/' + ${tutor.imagePath}" alt="Profile Picture">
+                    <img th:unless="${tutor != null && tutor.imagePath != null}" src="/images/tutorimg_ic.png" alt="Default Profile Picture">
+                </div>
+                <a th:if="${tutorLoggedIn && '/tutor/upload/' + tutor.id == '/tutor/upload/' + tutor.id}" th:href="@{'/tutor/upload/' + ${tutor.id}}">Upload Image</a>
+            </div>
+
+
+        <div class="column col-8">
+            <table class="table table--striped" style="border-collapse: collapse; width: 65%;
+            margin: 15px auto 25px auto; border: #CBCBCB; border-style: solid; border-width: thin;">
+                <thead>
+                <tr>
+                    <th style="text-align: center;">Profile Information</th>
+                    <th:block th:if="${tutorLoggedIn}">
+                        <td style="width: 25%; text-align: right;">
+                            <a th:href="@{/tutor/profile/edit/{id}(id=${tutor.id})}">Edit</a>
+                        </td>
+                    </th:block>
+
+
+
+                </tr>
+                </thead>
+                    <tr>
+                        <td style="width: 25%;">Name: </td>
+                        <td th:text="${tutor.firstName} + ' ' + ${tutor.lastName}">Tutor name</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 25%;">Email: </td>
+                        <td th:text="${tutor.email}" >Tutor email</td>
+                    </tr>
+
+                    <tr>
+                        <td style="width: 25%;">Qualifications: </td>
+                        <td th:text="${tutor.qualifications}" >Tutor qualifications</td>
+                    </tr>
+
+                    <tr>
+                        <td style="width: 25%;">Availability: </td>
+                        <td th:text="${tutor.availability}" >Tutor availability</td>
+                    </tr>
+    <!--                <tr>-->
+    <!--                    <td style="width: 25%;">Zoom Link: </td>-->
+    <!--                    <td th:text="${tutor.zoom_link}" >Tutor Zoom Link</td>-->
+    <!--                </tr>-->
+                </table>
+            <th:block class="text-end" th:if="${tutorLoggedIn}">
+                <form th:action="@{/tutor/delete/{id}(id=${tutor.id})}" method="post" onsubmit="return confirmDelete()">
+                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                </form>
+            </th:block>
+        </div>
+    </div>
+    </div>
+
+</article>
+<article class="infobox">
+    <h3>Reviews</h3>
+    <p>Add a review for your tutor here, or view what others have said.</p>
+    <div class="row">
+
+        <!--        <div class="img-column"><img src="static/images/books.png"  alt="a book"/></div>-->
+        <div class="column">
+            <a th:href="@{'/tutorreviews/add/' + ${tutor.id}}">Add Tutor Review</a>
+        </div>
+        <div class="column">
+            <a th:href="@{'/tutorreviews/view/' + ${tutor.id}}">View Tutor Review</a>
+        </div>
+    </div>
+
+</article>
+
+<article class="infobox">
+    <h3>Schedule</h3>
+    <p>Students can select their name, subject and Schedule to schedule an appointment with this tutor.</p>
+    <div class="container-fluid">
+<!--            <div th:include="~{calendar :: showCalendar}"></div>-->
+
+        <form th:action="@{/calendar}" method = "post">
+            <p>
+                <input type="hidden" th:value="${tutor.id}" th:attr="name='tutorId'"/>
+            </p>
+            <label for="studentSelected">Select Student: </label>
+            <select id="studentSelected" name="studentSelected">
+                <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.firstName} + ' ' +  ${student.lastName}"></option>
+            </select>
+            <label for="subjectSelected">Select Subject: </label>
+            <select id="subjectSelected" name="subjectSelected">
+                <option th:each="subject : ${subjects}" th:value="${subject.courseName}" th:text="${subject.courseName}"></option>
+            </select>
+            <input type="submit" value="Schedule" />
+        </form>
+    </div>
+</article>
+
+
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script>
+    function confirmDelete() {
+        return confirm('Are you sure you want to delete your account? This action cannot be undone.');
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+</body>
+</html>

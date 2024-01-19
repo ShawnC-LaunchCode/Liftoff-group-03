@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../static/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet" />
+    <title>Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <link href="icons/style.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<div th:fragment="showCalendar">
+    <div class="main">
+        <div class="wrap">
+            <div class="left">
+                <div id="nav"></div>
+            </div>
+            <div class="right">
+                <div class="toolbar">
+                    <button id="previous">Previous</button>
+                    <button id="next">Next</button>
+                </div>
+                <h2 th:text="'Calendar for ' + ${subjectSelected} + ' Tutor: ' + ${tutor.firstName} + ' ' +  ${tutor.lastName}">Calendar</h2>
+                <h3 th:text = "'Student: ' + ${student.firstName} + ' ' +  ${student.lastName}"></h3>
+                <form>
+                    <div id="dp"></div>
+                    <input type="hidden" id="tutorId" value="{tutor.id}">
+               </form>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <script type="text/javascript" th:src="@{js\daypilot\daypilot-all.min.js}"></script>
+    </div>
+
+    <script th:inline="javascript">
+
+        /*<![CDATA[*/
+          const valueId = [[${tutor.id}]];
+          const subject = [[${subjectSelected}]];
+          const studentId = [[${student.id}]];
+        /*]]>*/
+
+        function fetchUpdatedEvents(valueId) {
+            return fetch(`/getUpdatedEvents/${valueId}`)
+                .then(response => response.json())
+                .catch(error => console.error('Error fetching updated events:', error));
+        }
+
+        // Function to rebind the data to the DayPilot calendar
+        function rebindCalendar(updatedEvents) {
+            // Assuming 'calendar' is your DayPilot Calendar instance
+            calendar.events.list = updatedEvents;
+            calendar.update();
+        }
+
+
+
+        const datePicker = new DayPilot.Navigator("nav", {
+          showMonths: 3,
+          skipMonths: 3,
+          selectMode: "Month",
+          onTimeRangeSelected: args => {
+            calendar.update({
+              startDate: args.day
+            });
+             /*<![CDATA[*/
+
+           /*     calendar.events.list = [[${events}]];*/
+
+            /*]]>*/
+        fetchUpdatedEvents(valueId)
+            .then(updatedEvents => rebindCalendar(updatedEvents))
+            .catch(error => console.error('Error fetching and rebinding events:', error));
+            calendar.update()
+
+          }
+        });
+        datePicker.init();
+
+
+
+        const calendar = new DayPilot.Calendar("dp", {
+          viewType: "Week",
+          eventEndSpec: "Date",
+          eventHeight: 30,
+          eventBarVisible: false,
+          onTimeRangeSelected: async (args) => {
+            const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
+            calendar.clearSelection();
+            if (modal.canceled) {
+              return;
+            }
+            const params = {
+              start: args.start,
+              end: args.end,
+              text: modal.result,
+              tutorId: valueId,
+              subject: subject,
+              studentId: studentId
+            };
+            const {data} = await DayPilot.Http.post('/api/events/create', params);
+            calendar.events.add(data);
+
+          },
+          onEventMove: async (args) => {
+              const params = {
+                id: args.e.id(),
+                start: args.newStart,
+                end: args.newEnd
+              };
+              const {data} = await DayPilot.Http.post('/api/events/move', params);
+          },
+          onEventResize: async (args) => {
+              const params = {
+                id: args.e.id(),
+                start: args.newStart,
+                end: args.newEnd
+              };
+              const {data} = await DayPilot.Http.post('/api/events/move', params);
+          },
+          onBeforeEventRender: args => {
+            const color = args.data.color || app.colors.gray;
+            args.data.backColor = color;
+            args.data.borderColor = "darker";
+            args.data.fontColor = "#ffffff";
+            args.data.areas = [
+              {
+                top: 6,
+                right: 6,
+                width: 18,
+                height: 18,
+                symbol: "../icons/daypilot.svg#minichevron-down-2",
+                action: "ContextMenu",
+                backColor: "#ffffff",
+                fontColor: "#666666",
+                style: "border: 1px solid #ccc; cursor:pointer; border-radius: 15px;"
+              }
+            ];
+          },
+          contextMenu: new DayPilot.Menu({
+            items: [
+              {
+                text: "Delete",
+                onClick: async (args) => {
+                  const e = args.source;
+                  const params = {
+                    id: e.id()
+                  };
+
+                  const {data} = await DayPilot.Http.post('/api/events/delete', params);
+                  calendar.events.remove(e);
+                }
+              },
+              {
+                text: "-"
+              },
+              {
+                text: "Blue",
+                icon: "icon icon-blue",
+                onClick: (args) => {
+                  app.updateColor(args.source, app.colors.blue);
+                }
+              },
+              {
+                text: "Green",
+                icon: "icon icon-green",
+                onClick: (args) => {
+                  app.updateColor(args.source, app.colors.green);
+                }
+              },
+              {
+                text: "Yellow",
+                icon: "icon icon-yellow",
+                onClick: (args) => {
+                  app.updateColor(args.source, app.colors.yellow);
+                }
+              },
+              {
+                text: "Red",
+                icon: "icon icon-red",
+                onClick: (args) => {
+                  app.updateColor(args.source, app.colors.red);
+                }
+              }, {
+                text: "Auto",
+                onClick: (args) => {
+                  app.updateColor(args.source, "auto");
+                }
+              },
+
+            ]
+          })
+        });
+        calendar.init();
+
+        const app = {
+          colors: {
+            blue: "#2e78d6",
+            green: "#6aa84f",
+            yellow: "#efb914",
+            red: "#cc4125",
+            gray: "#808080",
+          },
+          elements: {
+            previous: document.querySelector("#previous"),
+            next: document.querySelector("#next"),
+          },
+          async updateColor(e, color) {
+            const params = {
+              id: e.id(),
+              color: color
+            };
+            const {data} = await DayPilot.Http.post('/api/events/setColor', params);
+            e.data.color = color;
+            calendar.events.update(e);
+          },
+          init() {
+            app.elements.previous.addEventListener("click", () => {
+              const current = datePicker.selectionDay;
+              datePicker.select(current.addMonths(-1));
+            });
+            app.elements.next.addEventListener("click", () => {
+              const current = datePicker.selectionDay;
+              datePicker.select(current.addMonths(1));
+            });
+            /*<![CDATA[*/
+
+              /*  calendar.events.list = [[${events}]];*/
+        fetchUpdatedEvents(valueId)
+            .then(updatedEvents => rebindCalendar(updatedEvents))
+            .catch(error => console.error('Error fetching and rebinding events:', error));
+
+            /*]]>*/
+                calendar.update();
+
+
+
+          }
+        };
+
+        app.init();
+
+    </script>
+
+
+    <style>
+        .month_default_event_inner {
+            border-radius: 20px;
+        }
+
+    </style>
+
+    </div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+ </body>
+ </html>
