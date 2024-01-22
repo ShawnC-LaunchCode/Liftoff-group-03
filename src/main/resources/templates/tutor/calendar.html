@@ -45,6 +45,8 @@
           const valueId = [[${tutor.id}]];
           const subject = [[${subjectSelected}]];
           const studentId = [[${student.id}]];
+          const studentName = [[${student.firstName}]];
+          const tutorName = [[${tutor.firstName}]];
         /*]]>*/
 
         function fetchUpdatedEvents(valueId) {
@@ -92,7 +94,21 @@
           eventHeight: 30,
           eventBarVisible: false,
           onTimeRangeSelected: async (args) => {
-            const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
+                const form = [
+                  {name: "Tutor Name", id: "tutorName"},
+                  {name: "Subject", id: "subject"},
+                  {name: "Student Name", id: "studentName"}
+                ];
+
+                const data1 = {
+                  tutorName: tutorName,
+                  subject: subject,
+                  studentName: studentName
+                };
+
+                const modal = await DayPilot.Modal.form(form, data1);
+
+
             calendar.clearSelection();
             if (modal.canceled) {
               return;
@@ -100,7 +116,7 @@
             const params = {
               start: args.start,
               end: args.end,
-              text: modal.result,
+              text: modal.result.tutorName + '-' + subject + '-' + modal.result.studentName,
               tutorId: valueId,
               subject: subject,
               studentId: studentId
@@ -188,13 +204,7 @@
                 onClick: (args) => {
                   app.updateColor(args.source, app.colors.red);
                 }
-              }, {
-                text: "Auto",
-                onClick: (args) => {
-                  app.updateColor(args.source, "auto");
-                }
               },
-
             ]
           })
         });
